@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-
+const dbTestRoutes = require('./routes/dbTest.routes');
 const testRoutes = require('./routes/test.routes');
+
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get('/', (req, res) => {
 
 // use routes
 app.use('/api', testRoutes);
+app.use('/api', dbTestRoutes);
 
 module.exports = app;
