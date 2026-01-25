@@ -7,6 +7,7 @@ const protectedRoutes = require('./routes/protected.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
 const roomRoutes = require('./routes/room.routes');
+const bookingRoutes = require('./routes/booking.routes');
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api', protectedRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', adminRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 
 module.exports = app;

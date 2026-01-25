@@ -1,0 +1,13 @@
+const express = require('express');
+const router = express.Router();
+
+const authMiddleware = require('../middleware/auth.middleware');
+const bookingController = require('../controllers/booking.controller');
+
+// Book a room (logged-in users)
+router.post('/', authMiddleware, bookingController.createBooking);
+
+// Get logged-in user's bookings
+router.get('/me', authMiddleware, bookingController.getMyBookings);
+
+module.exports = router;

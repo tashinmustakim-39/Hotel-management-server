@@ -9,3 +9,30 @@ CREATE TABLE IF NOT EXISTS users (
   role ENUM('user', 'admin') DEFAULT 'user',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+-- ROOMS TABLE
+CREATE TABLE IF NOT EXISTS rooms (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_number VARCHAR(20) NOT NULL UNIQUE,
+  type VARCHAR(50) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  capacity INT NOT NULL,
+  status ENUM('available', 'occupied') DEFAULT 'available',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+-- BOOKINGS TABLE
+CREATE TABLE IF NOT EXISTS bookings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  room_id INT NOT NULL,
+  check_in DATE NOT NULL,
+  check_out DATE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (room_id) REFERENCES rooms(id)
+);
