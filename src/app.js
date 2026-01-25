@@ -5,6 +5,7 @@ const testRoutes = require('./routes/test.routes');
 const authRoutes = require('./routes/auth.routes');
 const protectedRoutes = require('./routes/protected.routes');
 const userRoutes = require('./routes/user.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api', dbTestRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api', adminRoutes);
 
 
 module.exports = app;
