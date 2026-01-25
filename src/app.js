@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth.routes');
 const protectedRoutes = require('./routes/protected.routes');
 const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
+const roomRoutes = require('./routes/room.routes');
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', adminRoutes);
+app.use('/api/rooms', roomRoutes);
 
 
 module.exports = app;
