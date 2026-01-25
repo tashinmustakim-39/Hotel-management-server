@@ -3,6 +3,7 @@ const cors = require('cors');
 const dbTestRoutes = require('./routes/dbTest.routes');
 const testRoutes = require('./routes/test.routes');
 const authRoutes = require('./routes/auth.routes');
+const protectedRoutes = require('./routes/protected.routes');
 
 
 const app = express();
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 app.use('/api', testRoutes);
 app.use('/api', dbTestRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api', protectedRoutes);
 
 
 module.exports = app;
