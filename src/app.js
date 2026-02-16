@@ -8,6 +8,7 @@ const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/admin.routes');
 const roomRoutes = require('./routes/room.routes');
 const bookingRoutes = require('./routes/booking.routes');
+const hotelRoutes = require('./routes/hotel.routes');
 
 
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/users', userRoutes);
 app.use('/api', adminRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/hotels', hotelRoutes);
 
 
 module.exports = app;
