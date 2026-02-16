@@ -9,6 +9,10 @@ const adminRoutes = require('./routes/admin.routes');
 const roomRoutes = require('./routes/room.routes');
 const bookingRoutes = require('./routes/booking.routes');
 const hotelRoutes = require('./routes/hotel.routes');
+const expenseRoutes = require('./routes/expense.routes');
+const employeeRoutes = require('./routes/employee.routes');
+const inventoryRoutes = require('./routes/inventory.routes');
+const managementRoutes = require('./routes/management.routes');
 
 
 const app = express();
@@ -32,6 +36,10 @@ app.use('/api', adminRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/hotels', hotelRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/management', managementRoutes);
 
 
 module.exports = app;
