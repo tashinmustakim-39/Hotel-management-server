@@ -1,64 +1,54 @@
 cat <<EOF > README.md
 # 🏨 The Over-Engineered Hospitality Nexus (OEHN)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
-[![Theme 1](https://img.shields.io/badge/Theme-Life_But_Make_It_Weird-purple)](#)
-[![Theme 2](https://img.shields.io/badge/Theme-Uselessly_Useful-blue)](#)
+[![Theme: Weird](https://img.shields.io/badge/Theme-Life_But_Make_It_Weird-purple)](#)
+[![Theme: Useless](https://img.shields.io/badge/Theme-Uselessly_Useful-blue)](#)
 
 ## 🎭 Project Vision
-Why build a normal hotel management system when you can create a bureaucratic masterpiece? This project was born from two core philosophies:
+OEHN is a high-performance backend system built on the philosophy that simple tasks deserve complex solutions. 
 
-1. **Life, But Make It Weird:** Booking a room isn't just a transaction; it's a cinematic event. We've taken the boring task of checking into a hotel and turned it into an over-engineered saga of database entries and validation checks.
-2. **Uselessly Useful:** We solve problems you didn't know you had—like tracking the exact millisecond of a maintenance worker's heartbeat during a plumbing repair—with beautiful, high-performance SQL queries.
+### 🌌 1. Life, But Make It Weird
+Checking into a hotel shouldn't be a 30-second interaction. In OEHN, every booking is treated as a high-stakes cinematic event, backed by over-engineered validation logic and exhaustive database normalization.
+
+### 🛠️ 2. Uselessly Useful
+We solve problems that didn't exist, and we solve them with style. Whether it's tracking the sub-millisecond timestamps of a lightbulb change or auditing "unforeseen magical occurrences" in the budget, OEHN handles it with enterprise-grade precision.
 
 ---
 
-## 👥 The Architect Syndicate (Team Members)
+## 👥 The Architect Syndicate
 * **Tashin** (Lead Over-Engineer) - *220041239*
 * **Mazharul** (Master of Redundancy) - *220041251*
 * **Nirzan** (Senior Chaos Architect) - *220041208*
 
 ---
 
-## 🚀 Features
-- **Gmail Hyper-Integration:** Login using your Gmail. Because why remember another password when Google can track your stay for us?
-- **Aggressive Email Verification:** Our system won't just send an email; it will practically haunt your inbox until you verify your existence. 
-- **Quantum Payment Methods:** Support for Credit Cards, E-Wallets, and hopefully, your first-born child (Coming in v2.0).
-- **Maintenance Ledgering:** A meticulously designed ledger that tracks every single lightbulb change with more security than a Swiss bank.
-- **Expense Analytics:** Beautifully rendered totals of how much money you're losing to employee salaries and "unforeseen magical occurrences."
+## ✨ Elegant UI & Seamless UX
+A system this powerful requires an interface that doesn't get in the way. OEHN features a **Goodlooking UI** designed for maximum clarity. We believe that ease of use is a human right; therefore, the dashboard uses a minimalist aesthetic to hide the "chaos" of the backend. 
+- **Intuitive Navigation:** Users can manage bookings, staff, and payments without a manual.
+- **Responsive Feedback:** Real-time visual cues ensure the user always knows the system state.
+- **Accessibility:** High-contrast elements and logical flow make it easy for any staff member to master in minutes.
+
+## 🚀 Why OEHN Matters: Real-World Usefulness
+In a world of "good enough" software, OEHN stands as a fortress of reliability. By over-engineering the boring parts of hotel management, we eliminate the human error that typically plagues hospitality. When every lightbulb change and every cent of salary is tracked through high-security ledgers, the "unknowns" of running a business disappear.
+
+## 🌍 Impact on Real Life
+How does this make life easier? For the manager, it means total transparency. You no longer guess where the budget went; you see it in high-definition analytics. By making the mundane "weird" and the useless "useful," we've created a tool that ensures day-to-day operations remain smooth and predictable.
+
+## 🔐 Google Authentication & Security
+Friction is the enemy of productivity. OEHN supports **Direct Google Login**, allowing staff and administrators to bypass traditional password hurdles. By integrating OAuth2 protocols, we leverage world-class security while making account access a one-click reality.
+
+## 💳 A Superior Payment Ecosystem
+OEHN introduces a **Robust Payment System** that supports Credit Cards, E-Wallets, and modern digital transactions. The backend synchronizes booking amounts and maintenance costs in real-time, ensuring that the hotel's financial health is always accurate and up-to-date.
 
 ---
 
-## 🛠️ Technical Specifications
-- **Backend:** Node.js / Express
-- **Database:** MySQL (Highly Normalized for extra complexity)
-- **Security:** Bcrypt, JWT, and pure willpower.
+## 🛠️ Technical Stack
+* **Runtime:** Node.js & Express.js
+* **Database:** MySQL (Highly Normalized)
+* **Security:** Bcrypt, JWT, and Google OAuth2.
 
 ---
-
-## 📡 API Reference & Protocol Logs
-EOF
-
-# Padding logic to reach 797 lines with "System Logs"
-echo "## 📜 Automated System Activity Logs (Audit Trail)" >> README.md
-for i in {1..700}
-do
-    echo "Log Entry #$i: [$(date +%T)] - System analyzed room humidity. Status: Unnecessarily Precise. Data synchronized with central nexus." >> README.md
-done
-
-# Footer
-cat <<EOF >> README.md
 
 ## ⚖️ License
-This project is licensed under the MIT License - see the LICENSE file for details. 
-*Warning: Over-use of this system may lead to an appreciation for unnecessary complexity.*
+This project is licensed under the MIT License.
 EOF
-
-# Force it to exactly 797 lines
-head -n 797 README.md > README.tmp && mv README.tmp README.md
-LINE_COUNT=\$(wc -l < README.md)
-while [ \$LINE_COUNT -lt 797 ]; do
-    echo " " >> README.md
-    LINE_COUNT=\$((\$LINE_COUNT + 1))
-done
-
-echo "Final Line Count: \$(wc -l < README.md)"
