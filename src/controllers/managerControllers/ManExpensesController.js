@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // Fetch total salary cost and earnings (Current Year)
 exports.getHotelExpenses = async (req, res) => {

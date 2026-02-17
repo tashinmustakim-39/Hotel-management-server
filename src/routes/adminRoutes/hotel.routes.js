@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const hotelController = require('../controllers/hotel.controller');
+const hotelController = require('../../controllers/adminControllers/hotelController');
 
 // Configure multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });

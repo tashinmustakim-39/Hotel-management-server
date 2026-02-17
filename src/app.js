@@ -1,18 +1,26 @@
 const express = require('express');
 const cors = require('cors');
+// Routes
 const dbTestRoutes = require('./routes/dbTest.routes');
 const testRoutes = require('./routes/test.routes');
 const authRoutes = require('./routes/auth.routes');
 const protectedRoutes = require('./routes/protected.routes');
 const userRoutes = require('./routes/user.routes');
-const adminRoutes = require('./routes/admin.routes');
-const roomRoutes = require('./routes/room.routes');
-const bookingRoutes = require('./routes/booking.routes');
-const hotelRoutes = require('./routes/hotel.routes');
-const expenseRoutes = require('./routes/expense.routes');
-const employeeRoutes = require('./routes/employee.routes');
-const inventoryRoutes = require('./routes/inventory.routes');
-const managementRoutes = require('./routes/management.routes');
+
+// Admin Routes
+const adminRoutes = require('./routes/adminRoutes/adminHotelRoutes');
+const hotelRoutes = require('./routes/adminRoutes/hotel.routes');
+const expenseRoutes = require('./routes/adminRoutes/expenseRoutes');
+
+// Manager Routes
+const roomRoutes = require('./routes/managerRoutes/roomsRoute');
+const employeeRoutes = require('./routes/managerRoutes/employeeRoute');
+const inventoryRoutes = require('./routes/managerRoutes/inventoryRoutes');
+const managementRoutes = require('./routes/managerRoutes/ManExpensesRoute');
+
+// Receptionist Routes
+const bookingRoutes = require('./routes/receptionistRoutes/checkout');
+const guestRoutes = require('./routes/receptionistRoutes/realCheckoutRoute');
 
 
 const app = express();
@@ -32,14 +40,21 @@ app.use('/api', dbTestRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', protectedRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api', adminRoutes);
-app.use('/api/rooms', roomRoutes);
-app.use('/api/bookings', bookingRoutes);
+
+// Admin
+app.use('/api', adminRoutes); // Kept as /api because admin.routes likely has /admin prefix
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/expenses', expenseRoutes);
+
+// Manager
+app.use('/api/rooms', roomRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/management', managementRoutes);
+
+// Receptionist
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/guests', guestRoutes);
 
 
 module.exports = app;

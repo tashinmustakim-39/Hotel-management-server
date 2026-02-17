@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // List Employees with Department (POST)
 exports.getEmployees = async (req, res) => {

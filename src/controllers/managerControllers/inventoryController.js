@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // Fetch Inventory List based on HotelID
 exports.getInventory = async (req, res) => {

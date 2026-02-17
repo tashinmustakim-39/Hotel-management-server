@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // Get Inventory Cost by Month
 exports.getInventorySummary = async (req, res) => {

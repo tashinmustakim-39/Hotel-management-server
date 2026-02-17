@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 /**
  * CREATE BOOKING (Step 12.3)
@@ -47,13 +47,13 @@ exports.createBooking = (req, res) => {
 
     // 2. Create booking
     const bookingSql = `
-      INSERT INTO bookings (user_id, room_id)
-      VALUES (?, ?)
+      INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, num_adults, num_children)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
       bookingSql,
-      [userId, room_id],
+      [userId, room_id, req.body.checkInDate, req.body.checkOutDate, req.body.adults || 1, req.body.children || 0],
       (err, result) => {
         if (err) {
           return res.status(500).json({ success: false, message: err.message });

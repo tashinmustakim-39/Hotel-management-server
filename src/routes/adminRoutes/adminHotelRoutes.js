@@ -1,10 +1,10 @@
 ﻿const express = require('express');
 const router = express.Router();
 
-const authMiddleware = require('../middleware/auth.middleware');
-const adminMiddleware = require('../middleware/admin.middleware');
-const bookingController = require('../controllers/booking.controller');
-const roomController = require('../controllers/room.controller');
+const authMiddleware = require('../../middleware/auth.middleware');
+const adminMiddleware = require('../../middleware/admin.middleware');
+const bookingController = require('../../controllers/receptionistControllers/checkout');
+const roomController = require('../../controllers/managerControllers/roomsController');
 
 
 router.get(

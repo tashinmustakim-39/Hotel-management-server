@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const managementController = require('../controllers/management.controller');
+const managementController = require('../../controllers/managerControllers/ManExpensesController');
 
 router.post('/hotel-expenses', managementController.getHotelExpenses);
 router.post('/transaction-earnings', managementController.getTransactionEarnings);

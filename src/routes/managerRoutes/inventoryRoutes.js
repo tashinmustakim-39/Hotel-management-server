@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const inventoryController = require('../controllers/inventory.controller');
+const inventoryController = require('../../controllers/managerControllers/inventoryController');
 
 router.get('/inventory/:hotelID', inventoryController.getInventory);
 router.post('/add-item', inventoryController.addItem);

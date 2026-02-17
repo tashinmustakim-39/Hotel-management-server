@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // Get all active hotels
 exports.getHotels = (req, res) => {

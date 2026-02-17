@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const expenseController = require('../controllers/expense.controller');
+const expenseController = require('../../controllers/adminControllers/expenseController');
 
 // Get Inventory Cost by Month
 router.get('/inventory-summary/:hotelId', expenseController.getInventorySummary);
