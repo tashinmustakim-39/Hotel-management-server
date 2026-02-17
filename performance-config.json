@@ -1,0 +1,7 @@
+{
+  "cache_strategy": "lru",
+  "max_memory_allocation": "512mb",
+  "request_timeout_ms": 5000,
+  "enable_compression": true,
+  "optimization_level": "high"
+}
