@@ -107,7 +107,13 @@ exports.login = (req, res) => {
       res.json({
         success: true,
         message: 'Login successful',
-        token
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        }
       });
     }
   );
