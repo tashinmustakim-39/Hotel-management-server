@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const session = require('express-session');
+const passport = require('./config/passport');
 // Routes
 const dbTestRoutes = require('./routes/dbTest.routes');
 const testRoutes = require('./routes/test.routes');
@@ -27,6 +29,13 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(session({
+  secret: process.env.JWT_SECRET || 'hotel_secret',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res) => {
   res.json({
