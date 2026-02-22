@@ -10,27 +10,12 @@ exports.getHotels = (req, res) => {
             return res.status(500).send("Error fetching hotels.");
         }
 
-        const parsedResults = results.map(hotel => {
-            let parsedLocation = hotel.Location;
-            try {
-                if (typeof hotel.Location === "string") {
-                    // Check if it looks like a JSON object/array before parsing, 
-                    // or just try parsing and fallback
-                    if (hotel.Location.startsWith('{') || hotel.Location.startsWith('[')) {
-                        parsedLocation = JSON.parse(hotel.Location);
-                    }
-                }
-            } catch (e) {
-                console.error("Error parsing location for hotel " + hotel.HotelID, e);
-                // Keep original string if parse fails
-            }
-
-            return {
-                ...hotel,
-                Location: parsedLocation,
-                HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null
-            };
-        });
+        const parsedResults = results.map(hotel => ({
+            ...hotel,
+            Location: typeof hotel.Location === "string" ? JSON.parse(hotel.Location) : hotel.Location,
+            HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null,
+            WebsiteLink: hotel.WebsiteLink
+        }));
 
         res.json(parsedResults);
     });
@@ -45,7 +30,7 @@ exports.addHotel = (req, res) => {
         return res.status(400).send("All fields including image are required.");
     }
 
-    const sql = "INSERT INTO Hotel (Name, Description, StarRating, Location, Status, HotelImage) VALUES (?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO Hotel (Name, Description, StarRating, Location, Status, HotelImage, WebsiteLink) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     // Parse location if it's sent as a stringified JSON (common in multipart/form-data)
     let parsedLocation = location;
@@ -58,7 +43,7 @@ exports.addHotel = (req, res) => {
         // If it's not valid JSON, we'll treat it as a simple string
     }
 
-    db.query(sql, [name, description, starRating, JSON.stringify(parsedLocation), status, hotelImage], (err, result) => {
+    db.query(sql, [name, description, starRating, JSON.stringify(parsedLocation), status, hotelImage, req.body.websiteLink], (err, result) => {
         if (err) {
             console.error("Error adding hotel:", err);
             res.status(500).send("Error adding hotel");
