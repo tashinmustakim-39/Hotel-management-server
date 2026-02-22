@@ -34,5 +34,5 @@ CREATE TABLE IF NOT EXISTS rooms (
 -- I will add `RoomClassID` to `rooms` as well to support the join if they want it, OR just map `type` to `ClassType`.
 -- The user's snippet uses `available_rooms` table. I will stick to `rooms` table as per their text description but adding necessary columns for functionality.
 
-ALTER TABLE rooms ADD COLUMN IF NOT EXISTS hotel_id INT;
-ALTER TABLE rooms ADD COLUMN IF NOT EXISTS image LONGBLOB;
+ALTER TABLE rooms ADD COLUMN hotel_id INT;
+ALTER TABLE rooms ADD COLUMN image LONGBLOB;

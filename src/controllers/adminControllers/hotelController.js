@@ -13,7 +13,8 @@ exports.getHotels = (req, res) => {
         const parsedResults = results.map(hotel => ({
             ...hotel,
             Location: typeof hotel.Location === "string" ? JSON.parse(hotel.Location) : hotel.Location,
-            HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null
+            HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null,
+            WebsiteLink: hotel.WebsiteLink
         }));
 
         res.json(parsedResults);
@@ -29,7 +30,7 @@ exports.addHotel = (req, res) => {
         return res.status(400).send("All fields including image are required.");
     }
 
-    const sql = "INSERT INTO Hotel (Name, Description, StarRating, Location, Status, HotelImage) VALUES (?, ?, ?, ?, ?, ?)";
+    const sql = "INSERT INTO Hotel (Name, Description, StarRating, Location, Status, HotelImage, WebsiteLink) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     // Parse location if it's sent as a stringified JSON (common in multipart/form-data)
     let parsedLocation = location;
@@ -42,7 +43,7 @@ exports.addHotel = (req, res) => {
         return res.status(400).send("Invalid location format.");
     }
 
-    db.query(sql, [name, description, starRating, JSON.stringify(parsedLocation), status, hotelImage], (err, result) => {
+    db.query(sql, [name, description, starRating, JSON.stringify(parsedLocation), status, hotelImage, req.body.websiteLink], (err, result) => {
         if (err) {
             console.error("Error adding hotel:", err);
             res.status(500).send("Error adding hotel");
