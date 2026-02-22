@@ -110,21 +110,30 @@ exports.addEmployee = async (req, res) => {
 };
 
 // Update Employee (POST)
+// Update Employee (POST)
 exports.updateEmployee = async (req, res) => {
     const {
         empID, firstName, lastName, phone, email,
-        deptName, hotelID, hourlyPay, role, workingStatus, hiredDate
+        deptName, deptID, hotelID, hourlyPay, role, workingStatus, hiredDate
     } = req.body;
 
     try {
-        const findDeptQuery = `SELECT DeptID FROM Department WHERE DeptName = ? AND HotelID = ? LIMIT 1`;
-        const [deptResult] = await db.promise().query(findDeptQuery, [deptName, hotelID]);
+        let finalDeptID = deptID;
 
-        if (deptResult.length === 0) {
-            return res.status(404).send("Department not found.");
+        // If deptID is not provided, try to find it via DeptName (legacy support)
+        if (!finalDeptID && deptName && hotelID) {
+            const findDeptQuery = `SELECT DeptID FROM Department WHERE DeptName = ? AND HotelID = ? LIMIT 1`;
+            const [deptResult] = await db.promise().query(findDeptQuery, [deptName, hotelID]);
+
+            if (deptResult.length === 0) {
+                return res.status(404).send("Department not found.");
+            }
+            finalDeptID = deptResult[0].DeptID;
         }
 
-        const deptID = deptResult[0].DeptID;
+        if (!finalDeptID) {
+            return res.status(400).send("Department ID or Name required.");
+        }
 
         const updateQuery = `
             UPDATE Employee
@@ -136,7 +145,7 @@ exports.updateEmployee = async (req, res) => {
         await db.promise().query(updateQuery, [
             firstName, lastName, phone, email,
             hourlyPay, role, workingStatus, hiredDate,
-            deptID, empID
+            finalDeptID, empID
         ]);
 
         res.send("Employee updated successfully.");

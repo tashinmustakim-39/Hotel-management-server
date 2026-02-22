@@ -10,11 +10,27 @@ exports.getHotels = (req, res) => {
             return res.status(500).send("Error fetching hotels.");
         }
 
-        const parsedResults = results.map(hotel => ({
-            ...hotel,
-            Location: typeof hotel.Location === "string" ? JSON.parse(hotel.Location) : hotel.Location,
-            HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null
-        }));
+        const parsedResults = results.map(hotel => {
+            let parsedLocation = hotel.Location;
+            try {
+                if (typeof hotel.Location === "string") {
+                    // Check if it looks like a JSON object/array before parsing, 
+                    // or just try parsing and fallback
+                    if (hotel.Location.startsWith('{') || hotel.Location.startsWith('[')) {
+                        parsedLocation = JSON.parse(hotel.Location);
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing location for hotel " + hotel.HotelID, e);
+                // Keep original string if parse fails
+            }
+
+            return {
+                ...hotel,
+                Location: parsedLocation,
+                HotelImage: hotel.HotelImage ? hotel.HotelImage.toString('base64') : null
+            };
+        });
 
         res.json(parsedResults);
     });
@@ -39,7 +55,7 @@ exports.addHotel = (req, res) => {
         }
     } catch (e) {
         console.error("Error parsing location:", e);
-        return res.status(400).send("Invalid location format.");
+        // If it's not valid JSON, we'll treat it as a simple string
     }
 
     db.query(sql, [name, description, starRating, JSON.stringify(parsedLocation), status, hotelImage], (err, result) => {
@@ -70,17 +86,17 @@ exports.deactivateHotel = (req, res) => {
 // Update a hotel
 exports.updateHotel = (req, res) => {
     const hotelId = req.params.id;
-    const { Name, Description, StarRating, Location } = req.body;
+    const { name, description, starRating, location } = req.body;
     const hotelImage = req.file ? req.file.buffer : null;
 
-    if (!Name || !Description || !StarRating || !Location) {
+    if (!name || !description || !starRating || !location) {
         return res.status(400).send("All hotel details are required");
     }
 
-    let parsedLocation = Location;
+    let parsedLocation = location;
     try {
-        if (typeof Location === 'string') {
-            parsedLocation = JSON.parse(Location);
+        if (typeof location === 'string') {
+            parsedLocation = JSON.parse(location);
         }
     } catch (e) {
         console.error("Error parsing location:", e); // Might be already an object or regular string if not JSON
@@ -96,14 +112,14 @@ exports.updateHotel = (req, res) => {
             SET Name = ?, Description = ?, StarRating = ?, Location = ?, HotelImage = ?
             WHERE HotelID = ?
         `;
-        params = [Name, Description, StarRating, JSON.stringify(parsedLocation), hotelImage, hotelId];
+        params = [name, description, starRating, JSON.stringify(parsedLocation), hotelImage, hotelId];
     } else {
         sql = `
             UPDATE Hotel 
             SET Name = ?, Description = ?, StarRating = ?, Location = ?
             WHERE HotelID = ?
         `;
-        params = [Name, Description, StarRating, JSON.stringify(parsedLocation), hotelId];
+        params = [name, description, starRating, JSON.stringify(parsedLocation), hotelId];
     }
 
     db.query(sql, params, (err, result) => {

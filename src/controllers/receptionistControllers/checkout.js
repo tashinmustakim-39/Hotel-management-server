@@ -6,80 +6,75 @@ const db = require('../../config/db');
  * - prevents double booking
  * - marks room as occupied
  */
-exports.createBooking = (req, res) => {
-  const userId = req.user.id;
-  const { room_id } = req.body;
+// Helper to get or create user
+const getOrCreateUser = async (guestDetails) => {
+  const { email, name, phone } = guestDetails;
+  // Check if user exists
+  const [users] = await db.promise().query('SELECT id FROM users WHERE email = ?', [email]);
+  if (users.length > 0) return users[0].id;
 
-  if (!room_id) {
-    return res.status(400).json({
-      success: false,
-      message: 'room_id is required'
-    });
-  }
+  // Create new user
+  // Note: Provide default password or handle NULL if schema allows. Assuming '123456' for now.
+  // Also assuming 'name' field exists, and splitting if needed or just using it.
+  // Schema in realCheckoutController used `first_name`, `last_name`.
+  const firstName = name.split(' ')[0];
+  const lastName = name.split(' ').slice(1).join(' ') || '';
 
-  // 1. Check room availability
-  const roomSql = `
-    SELECT price, capacity, status
-    FROM rooms
-    WHERE id = ?
-  `;
+  // Check if 'users' table has 'password' and 'role'
+  // This is valid based on typical schema.
+  const insertSql = `INSERT INTO users (first_name, last_name, email, phone_number, password, role) VALUES (?, ?, ?, ?, '123456', 'user')`;
+  const [result] = await db.promise().query(insertSql, [firstName, lastName, email, phone]);
+  return result.insertId;
+};
 
-  db.query(roomSql, [room_id], (err, roomResult) => {
-    if (err) {
-      return res.status(500).json({ success: false, message: err.message });
+exports.createBooking = async (req, res) => {
+  let userId = req.user.id;
+  const { room_id, guestDetails } = req.body;
+
+  try {
+    // If guestDetails provided (and logic permits), use/create that user
+    if (guestDetails && (req.user.role === 'receptionist' || req.user.role === 'manager' || req.user.role === 'admin')) {
+      userId = await getOrCreateUser(guestDetails);
     }
 
-    if (roomResult.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Room not found'
-      });
+    if (!room_id) {
+      return res.status(400).json({ success: false, message: 'room_id is required' });
     }
 
-    if (roomResult[0].status !== 'available') {
-      return res.status(400).json({
-        success: false,
-        message: 'Room is not available'
-      });
-    }
+    // 1. Check room availability
+    const roomSql = `SELECT price, capacity, status FROM rooms WHERE id = ?`;
+    const [roomResult] = await db.promise().query(roomSql, [room_id]);
 
-    const { price, capacity } = roomResult[0];
+    if (roomResult.length === 0) return res.status(404).json({ success: false, message: 'Room not found' });
+    if (roomResult[0].status !== 'available') return res.status(400).json({ success: false, message: 'Room is not available' });
 
     // 2. Create booking
-    const bookingSql = `
-      INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, num_adults, num_children)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `;
+    const bookingSql = `INSERT INTO bookings (user_id, room_id, check_in_date, check_out_date, num_adults, num_children) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    db.query(
-      bookingSql,
-      [userId, room_id, req.body.checkInDate, req.body.checkOutDate, req.body.adults || 1, req.body.children || 0],
-      (err, result) => {
-        if (err) {
-          return res.status(500).json({ success: false, message: err.message });
-        }
+    const [result] = await db.promise().query(bookingSql, [
+      userId,
+      room_id,
+      req.body.checkInDate,
+      req.body.checkOutDate,
+      req.body.adults || 1,
+      req.body.children || 0
+    ]);
 
-        // 3. Mark room as occupied
-        const updateRoomSql = `
-          UPDATE rooms
-          SET status = 'occupied'
-          WHERE id = ?
-        `;
+    // 3. Mark room as occupied
+    // NOTE: Only mark occupied if check-in is TODAY?
+    // For now keeping legacy logic: Booking = Occupied immediately.
+    await db.promise().query(`UPDATE rooms SET status = 'occupied' WHERE id = ?`, [room_id]);
 
-        db.query(updateRoomSql, [room_id], (err) => {
-          if (err) {
-            return res.status(500).json({ success: false, message: err.message });
-          }
+    res.status(201).json({
+      success: true,
+      message: 'Room booked successfully',
+      bookingId: result.insertId
+    });
 
-          res.status(201).json({
-            success: true,
-            message: 'Room booked successfully',
-            bookingId: result.insertId
-          });
-        });
-      }
-    );
-  });
+  } catch (err) {
+    console.error("Error creating booking:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
 
 /**
@@ -144,6 +139,7 @@ exports.getAllBookings = (req, res) => {
 exports.cancelBooking = (req, res) => {
   const bookingId = req.params.id;
   const userId = req.user.id;
+  const userRole = req.user.role;
 
   const findBookingSql = `
     SELECT id, room_id, user_id, status
@@ -165,7 +161,8 @@ exports.cancelBooking = (req, res) => {
 
     const booking = result[0];
 
-    if (booking.user_id !== userId) {
+    // Allow cancellation if user owns booking OR is standard staff (receptionist/manager/admin)
+    if (booking.user_id !== userId && !['receptionist', 'manager', 'admin'].includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: 'You can only cancel your own bookings'
@@ -181,7 +178,7 @@ exports.cancelBooking = (req, res) => {
 
     const cancelBookingSql = `
       UPDATE bookings
-      SET status = 'completed'
+      SET status = 'cancelled'
       WHERE id = ?
     `;
 
@@ -190,10 +187,13 @@ exports.cancelBooking = (req, res) => {
         return res.status(500).json({ success: false, message: err.message });
       }
 
+      // Mark room available ONLY if it was currently occupied? 
+      // Actually, for future bookings, room status might not be 'occupied' yet.
+      // But if it IS occupied, we should free it.
       const freeRoomSql = `
         UPDATE rooms
         SET status = 'available'
-        WHERE id = ?
+        WHERE id = ? AND status = 'occupied'
       `;
 
       db.query(freeRoomSql, [booking.room_id], (err) => {
@@ -206,6 +206,52 @@ exports.cancelBooking = (req, res) => {
           message: 'Booking cancelled successfully'
         });
       });
+    });
+  });
+};
+
+/**
+ * CHECK AVAILABILITY
+ * - Checks for rooms that do NOT have overlapping bookings
+ * - Strict Capacity Check: Room capacity MUST match requested adults
+ */
+exports.checkAvailability = (req, res) => {
+  const { hotelId, checkInDate, checkOutDate, adults, children } = req.body;
+
+  if (!hotelId || !checkInDate || !checkOutDate) {
+    return res.status(400).json({ success: false, message: 'Missing required fields' });
+  }
+
+  // Use provided adults count or default to 1.
+  const requiredCapacity = adults || 1;
+
+  const sql = `
+    SELECT r.*
+    FROM rooms r
+    WHERE r.hotel_id = ?
+    AND r.capacity = ? 
+    AND r.id NOT IN (
+      SELECT b.room_id 
+      FROM bookings b 
+      WHERE (b.check_in_date < ? AND b.check_out_date > ?)
+      AND b.status NOT IN ('cancelled', 'completed')
+    )
+  `;
+
+  db.query(sql, [hotelId, requiredCapacity, checkOutDate, checkInDate], (err, rooms) => {
+    if (err) {
+      console.error("Error Checking Availability:", err);
+      return res.status(500).json({ success: false, message: err.message });
+    }
+
+    const roomsWithImages = rooms.map(room => ({
+      ...room,
+      image: room.image ? Buffer.from(room.image).toString('base64') : null
+    }));
+
+    res.json({
+      success: true,
+      rooms: roomsWithImages
     });
   });
 };

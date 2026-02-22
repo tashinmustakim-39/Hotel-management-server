@@ -16,5 +16,10 @@ router.post(
   bookingController.cancelBooking
 );
 
+router.post('/check-availability', authMiddleware, bookingController.checkAvailability);
+
+
+// Get all bookings (for Receptionist/Manager to manage)
+router.get('/all', authMiddleware, bookingController.getAllBookings);
 
 module.exports = router;

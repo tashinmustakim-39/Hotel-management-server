@@ -1,4 +1,4 @@
-# 🏨 The Over-Engineered Hospitality Nexus (OEHN)
+# 🏨 overstay
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 [![Theme: Weird](https://img.shields.io/badge/Theme-Life_But_Make_It_Weird-purple)](#)

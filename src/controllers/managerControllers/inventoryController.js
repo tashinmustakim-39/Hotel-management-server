@@ -6,7 +6,7 @@ exports.getInventory = async (req, res) => {
 
     if (!hotelID) return res.status(400).send("Hotel ID is required");
 
-    const query = `SELECT InventoryID, ItemName, Quantity, LastUpdated FROM Inventory WHERE HotelID = ?`;
+    const query = `SELECT InventoryID, ItemName, Quantity, UnitPrice, LastUpdated FROM Inventory WHERE HotelID = ?`;
 
     try {
         const [results] = await db.promise().query(query, [hotelID]);
@@ -19,14 +19,17 @@ exports.getInventory = async (req, res) => {
 
 // Add New Item
 exports.addItem = async (req, res) => {
-    const { hotelID, itemName } = req.body;
+    const { hotelID, itemName, quantity, unitPrice } = req.body;
 
     if (!hotelID || !itemName) return res.status(400).send("Hotel ID and Item Name are required");
 
-    const query = `INSERT INTO Inventory (HotelID, ItemName, Quantity) VALUES (?, ?, 0)`;
+    const initialQty = quantity || 0;
+    const price = unitPrice || 0.00;
+
+    const query = `INSERT INTO Inventory (HotelID, ItemName, Quantity, UnitPrice) VALUES (?, ?, ?, ?)`;
 
     try {
-        const [result] = await db.promise().query(query, [hotelID, itemName]);
+        const [result] = await db.promise().query(query, [hotelID, itemName, initialQty, price]);
         res.status(201).json({ message: "Item added successfully", InventoryID: result.insertId });
     } catch (err) {
         console.error("Error adding item:", err);
@@ -149,6 +152,35 @@ exports.updateTransaction = async (req, res) => {
     } catch (err) {
         console.error("Error updating transaction:", err);
         res.status(500).send("Error updating transaction");
+    }
+};
+
+// Delete an Item
+exports.deleteItem = async (req, res) => {
+    const inventoryID = req.params.inventoryID;
+
+    if (!inventoryID) return res.status(400).send("Inventory ID is required");
+
+    // Check for dependencies (e.g., existing transactions) - optional but good practice
+    // For now, simple delete. If foreign keys are set to RESTRICT, this might fail if transactions exist.
+    // If we want to allow deleting even with history, we might soft delete or cascade. 
+    // Let's try simple delete first.
+
+    const query = `DELETE FROM Inventory WHERE InventoryID = ?`;
+
+    try {
+        const [result] = await db.promise().query(query, [inventoryID]);
+        if (result.affectedRows === 0) {
+            return res.status(404).send("Item not found");
+        }
+        res.status(200).send("Item deleted successfully");
+    } catch (err) {
+        console.error("Error deleting item:", err);
+        // Check for foreign key constraint error (errno 1451)
+        if (err.errno === 1451) {
+            return res.status(400).send("Cannot delete item because it has associated orders.");
+        }
+        res.status(500).send("Error deleting item");
     }
 };
 

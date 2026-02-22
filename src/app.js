@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const adminRoutes = require('./routes/adminRoutes/adminHotelRoutes');
 const hotelRoutes = require('./routes/adminRoutes/hotel.routes');
 const expenseRoutes = require('./routes/adminRoutes/expenseRoutes');
+const dashboardRoutes = require('./routes/adminRoutes/dashboard.routes');
 
 // Manager Routes
 const roomRoutes = require('./routes/managerRoutes/roomsRoute');
@@ -21,7 +22,7 @@ const managementRoutes = require('./routes/managerRoutes/ManExpensesRoute');
 // Receptionist Routes
 const bookingRoutes = require('./routes/receptionistRoutes/checkout');
 const guestRoutes = require('./routes/receptionistRoutes/realCheckoutRoute');
-
+const receptionistGuestRoutes = require('./routes/receptionistRoutes/guests');
 
 const app = express();
 
@@ -45,16 +46,18 @@ app.use('/api/users', userRoutes);
 app.use('/api', adminRoutes); // Kept as /api because admin.routes likely has /admin prefix
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/admin/dashboard', dashboardRoutes);
 
 // Manager
 app.use('/api/rooms', roomRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/inventory', inventoryRoutes);
-app.use('/api/management', managementRoutes);
+app.use('/api/manager/expenses', managementRoutes);
 
 // Receptionist
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/guests', guestRoutes);
+app.use('/api/guests-checkout', guestRoutes); // Renamed to avoid conflict if needed, or keep as is if different intent
+app.use('/api/guests', receptionistGuestRoutes);
 
 
 module.exports = app;

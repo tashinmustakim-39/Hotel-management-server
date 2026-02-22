@@ -8,6 +8,7 @@ router.post('/order-item', inventoryController.orderItem);
 router.get('/transactions/:hotelID', inventoryController.getTransactions);
 router.post('/receive-order', inventoryController.receiveOrder);
 router.post('/update-transaction', inventoryController.updateTransaction);
+router.delete('/delete-item/:inventoryID', inventoryController.deleteItem);
 router.get('/transaction-summary/:hotelID', inventoryController.getTransactionSummary);
 
 module.exports = router;
