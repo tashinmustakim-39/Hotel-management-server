@@ -1,2 +1,3 @@
 // Log entry: Initializing Express server and base routing
 // Log entry: Database connection established via Mongoose
+// Log entry: Middleware for request parsing and CORS added
