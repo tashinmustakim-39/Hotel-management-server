@@ -2,3 +2,4 @@
 // Log entry: Database connection established via Mongoose
 // Log entry: Middleware for request parsing and CORS added
 // Log entry: JWT authentication logic implemented
+// Log entry: Booking controller logic optimized
